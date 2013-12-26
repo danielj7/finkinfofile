@@ -100,7 +100,7 @@ Boolean GetMetadataForFile(void* thisInterface,
 				if ((theFields = [infoFile fieldList])) {
 				
 				// if there's an Info2 block, access the inner dictionary
-				if ((infoBlock = theFields[@"info2"]) || (infoBlock = theFields[@"info3"])) {
+				if ((infoBlock = theFields[@"info2"]) || (infoBlock = theFields[@"info3"]) || (infoBlock = theFields[@"info4"])) {
 					theFields = infoBlock;
 				}
 				
