@@ -111,11 +111,11 @@ static NSCharacterSet	*whitespaceSet;
 					while (line = [lineEnumerator nextObject]) {
 						NSString *trimmedLine = [line stringByTrimmingCharactersInSet:whitespaceSet];
 						if ([trimmedLine isEqualToString:@""]) {
-						contentString = [contentString stringByAppendingString:@"\n"];
-						continue;
+							contentString = [contentString stringByAppendingString:@"\n"];
+							continue;
 						}
 						if ([trimmedLine isEqualToString:@"<<"]) {
-						break;
+							break;
 						}
 						contentString = [contentString stringByAppendingFormat:@"%@\n", line];
 					}
