@@ -1,0 +1,59 @@
+#!/bin/bash
+
+PREFIX=@PREFIX@
+
+case $1 in
+	install)
+		if [ -f ${PREFIX}/lib/finkinfofile/installed -a -e /Library/Spotlight/FinkInfoFile.mdimporter ]; then
+			echo 'Spotlight importer already installed.'
+			exit
+		elif [ -e /Library/Spotlight/FinkInfoFile.mdimporter ]; then
+			echo 'Existing /Library/Spotlight/FinkInfoFile.mdimporter being renamed to /Library/Spotlight/FinkInfoFile.mdimporter.old.'
+			if [ -e /Library/Spotlight/FinkInfoFile.mdimporter.old ] ; then
+				echo -n '/Library/Spotlight/FinkInfoFile.mdimporter.old already exists. Would you like to overwrite it [yN]? '
+				
+				read ANS
+				case "$ANS" in
+					y*|Y*)	/usr/bin/sudo /bin/rm -rf /Library/Spotlight/FinkInfoFile.mdimporter.old || exit 1 ;;
+					*)		echo '/Library/Spotlight/FinkInfoFile.mdimporter.old in the way. Failed.' ; exit 1 ;;
+				esac
+			fi
+			
+			echo
+			echo 'Backing up the old FinkInfoFile.mdimporter to /Library/Spotlight/FinkInfoFile.mdimporter.old.'
+			/usr/bin/sudo /bin/mv /Library/Spotlight/FinkInfoFile.mdimporter /Library/Spotlight/FinkInfoFile.mdimporter.old || exit 1
+			echo 'Succeeded.'
+		fi
+		
+		echo "Putting a link to Fink's FinkInfoFile.mdimporter in /Library/Spotlight and beginning indexing."
+		/usr/bin/sudo /bin/ln -s "${PREFIX}/lib/finkinfofile/FinkInfoFile.mdimporter" /Library/Spotlight/FinkInfoFile.mdimporter || exit 1
+		/usr/bin/sudo touch ${PREFIX}/lib/finkinfofile/installed
+		/usr/bin/mdimport -r /Library/Spotlight/FinkInfoFile.mdimporter
+		/usr/bin/mdimport ${PREFIX}/fink
+		echo 'Succeeded.'
+		echo
+		;;
+	
+	remove)
+		if [ ! -f ${PREFIX}/lib/finkinfofile/installed -o ! -e /Library/Spotlight/FinkInfoFile.mdimporter ]; then
+			echo 'Spotlight importer not installed so not removing.'
+			exit
+		fi
+		echo 'Removing link to FinkInfoFile.mdimporter from /Library/Spotlight.'
+		/usr/bin/sudo /bin/rm -rf /Library/Spotlight/FinkInfoFile.mdimporter || exit 1
+		echo 'Succeeded.'
+		if [ -e /Library/Spotlight/FinkInfoFile.mdimporter.old ]; then
+			echo 'Restoring /Library/Spotlight/FinkInfoFile.mdimporter.old to /Library/Spotlight/FinkInfoFile.mdimporter.'
+			/usr/bin/sudo /bin/mv /Library/Spotlight/FinkInfoFile.mdimporter.old /Library/Spotlight/FinkInfoFile.mdimporter || exit 1
+			echo 'Succeeded.'
+		fi
+		/usr/bin/sudo /bin/rm -f ${PREFIX}/lib/finkinfofile/installed
+		;;
+		
+	*)
+		echo "Unknown command '$1'!"
+		echo "finkinfofile -- install or remove the FinkInfoFile Spotlight importer."
+		echo 'usage: finkinfofile {install|remove}'
+		exit 1
+		;;
+esac
