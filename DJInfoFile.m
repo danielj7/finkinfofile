@@ -50,7 +50,10 @@ static NSCharacterSet	*whitespaceSet;
 	// if the file begins with "This is ", it's probably a makeinfo generated file and can be ignored
 	if ([string hasPrefix:@"This is "])
 		return self;
-		
+	
+	// Set to raw text content
+	_fileContents = string;
+	
 	// split file in lines
 	NSArray		*lines;
 	if (!(lines = [string componentsSeparatedByString:@"\n"])) return self;

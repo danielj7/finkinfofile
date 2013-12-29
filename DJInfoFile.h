@@ -30,6 +30,7 @@
 @interface DJInfoFile : NSObject
 
 @property (readonly) NSDictionary *fieldList;
+@property (readonly) NSString *fileContents;
 
 - (id)initWithString:(NSString *)string;
 - (id)initWithContentsOfURL:(NSURL *)url error:(NSError **)error;
