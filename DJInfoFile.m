@@ -26,13 +26,6 @@
 
 #import "DJInfoFile.h"
 
-
-@interface DJInfoFile (Private)
-
-- (NSDictionary *)parseFields:(NSEnumerator *)lineEnumerator;
-
-@end
-
 static NSCharacterSet	*newlineSet;
 static NSCharacterSet	*colonSet;
 static NSCharacterSet	*whitespaceSet;
@@ -66,11 +59,6 @@ static NSCharacterSet	*whitespaceSet;
     return self;
 }
 
-
-@end
-
-
-@implementation DJInfoFile (Private)
 
 - (NSDictionary *)parseFields:(NSEnumerator *)lineEnumerator {    
     id		    line;
