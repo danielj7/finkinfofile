@@ -87,28 +87,14 @@ Boolean GetMetadataForFile(void* thisInterface,
     
     // need to create an autorelease pool ourselves
     @autoreleasepool {
-    
-        NSStringEncoding enc;
+		
         NSError *error;
-        NSString *fileContents = [NSString stringWithContentsOfFile:(__bridge NSString *)pathToFile usedEncoding:&enc error:&error];
-        
-		if (fileContents == nil) {
-			fileContents = [NSString stringWithContentsOfFile:(__bridge NSString *)pathToFile encoding:NSWindowsCP1252StringEncoding error:&error];
-		}
 		
-		if (fileContents == nil) {
-			NSLog(@"Unable to open file %@", (__bridge NSString *)pathToFile);
-			return success;
-		}
-		
-        // if the file begins with "This is ", it's probably a makeinfo generated file and can be ignored
-        if (![fileContents hasPrefix:@"This is "]) {
-	
-			if ((infoFile = [[DJInfoFile alloc] initWithString:fileContents])) {
+		if ((infoFile = [[DJInfoFile alloc] initWithContentsOfPath:(__bridge NSString *)pathToFile error:&error])) {
+			
+			if ((theFields = [infoFile fieldList])) {
 				
-				if ((theFields = [infoFile fieldList])) {
-				
-				// if there's an Info2 block, access the inner dictionary
+				// if there's an InfoN block, access the inner dictionary
 				if ((infoBlock = theFields[@"info2"]) || (infoBlock = theFields[@"info3"]) || (infoBlock = theFields[@"info4"])) {
 					theFields = infoBlock;
 				}
@@ -149,13 +135,13 @@ Boolean GetMetadataForFile(void* thisInterface,
 					NSString *revisionString = theFields[@"revision"];
 					
 					if (epochString) {
-					fieldContent = [epochString stringByAppendingFormat:@":%@", fieldContent];
+						fieldContent = [epochString stringByAppendingFormat:@":%@", fieldContent];
 					}
 					
 					if (revisionString) {
-					fieldContent = [fieldContent stringByAppendingFormat:@"-%@", revisionString];
+						fieldContent = [fieldContent stringByAppendingFormat:@"-%@", revisionString];
 					} else {
-					success = NO;
+						success = NO;
 					}
 					
 					((__bridge NSMutableDictionary *)attributes)[(NSString *)kMDItemVersion] = fieldContent;
@@ -164,8 +150,7 @@ Boolean GetMetadataForFile(void* thisInterface,
 				}
 				
 				// set TextContent attribute to the full text of the file as a catch-all
-				((__bridge NSMutableDictionary *)attributes)[(NSString *)kMDItemTextContent] = fileContents;
-				}
+				((__bridge NSMutableDictionary *)attributes)[(NSString *)kMDItemTextContent] = [infoFile fileContents];
 			}
         }
         
