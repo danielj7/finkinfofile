@@ -20,11 +20,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
 Instructions for use:
 
-Install FinkInfoFile.pkg
-
-	Or if you want to install for just the current user:
-
-1. Copy FinkInfoFile.mdimporter from the package_contents folder to ~/Library/Spotlight
+1. Copy FinkInfoFile.mdimporter to ~/Library/Spotlight or /Library/Spotlight.
 
 2. From Terminal type: mdimport /sw/fink
    (or whereever you keep your fink tree)
@@ -39,8 +35,7 @@ Description = Description
 Instructions = DescDetail
 Version = Epoch:Version-Revision
 
-Source code is included in the Source folder that should accompany the FinkInfoFile.pkg file.
+The included Xcode project will only build on 10.9+ but the resulting
+importer should work on any Mac back to 10.7.
 
-The importer is now built as a Universal Binary.
-
-The latest version of this importer can be found at http://homepage.mac.com/danielj7 or http://www.daniel-johnson.org.
+The latest version of this importer can be found at https://github.com/danielj7/finkinfofile.
