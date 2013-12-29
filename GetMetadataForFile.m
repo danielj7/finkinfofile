@@ -92,6 +92,15 @@ Boolean GetMetadataForFile(void* thisInterface,
         NSError *error;
         NSString *fileContents = [NSString stringWithContentsOfFile:(__bridge NSString *)pathToFile usedEncoding:&enc error:&error];
         
+		if (fileContents == nil) {
+			fileContents = [NSString stringWithContentsOfFile:(__bridge NSString *)pathToFile encoding:NSWindowsCP1252StringEncoding error:&error];
+		}
+		
+		if (fileContents == nil) {
+			NSLog(@"Unable to open file %@", (__bridge NSString *)pathToFile);
+			return success;
+		}
+		
         // if the file begins with "This is ", it's probably a makeinfo generated file and can be ignored
         if (![fileContents hasPrefix:@"This is "]) {
 	
