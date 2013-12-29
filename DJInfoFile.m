@@ -32,6 +32,9 @@ static NSCharacterSet	*whitespaceSet;
 
 @implementation DJInfoFile
 
+// Designated initializer
+// Create infofile dictionary from string.
+
 - (id)initWithString:(NSString *)string {
     if (self = [super init]) {
 	if (string == nil) return self;
@@ -43,7 +46,11 @@ static NSCharacterSet	*whitespaceSet;
 	    colonSet = [NSCharacterSet characterSetWithCharactersInString:@":"];
 	if (whitespaceSet == nil)
 	    whitespaceSet = [NSCharacterSet whitespaceCharacterSet];
-	
+		
+	// if the file begins with "This is ", it's probably a makeinfo generated file and can be ignored
+	if ([string hasPrefix:@"This is "])
+		return self;
+		
 	// split file in lines
 	NSArray		*lines;
 	if (!(lines = [string componentsSeparatedByString:@"\n"])) return self;
@@ -59,6 +66,24 @@ static NSCharacterSet	*whitespaceSet;
     return self;
 }
 
+// Create infofile dictionary from URL.
+
+- (id)initWithContentsOfURL:(NSURL *)url error:(NSError **)error {
+	NSString *fileContents = [NSString stringWithContentsOfURL:url encoding:NSUTF8StringEncoding error:error];
+	if (fileContents == nil) {
+		fileContents = [NSString stringWithContentsOfURL:url encoding:NSWindowsCP1251StringEncoding error:error];
+	}
+	return [self initWithString:fileContents];
+}
+
+// Create infofile dictionary from pathname.
+
+- (id)initWithContentsOfPath:(NSString *)path error:(NSError **)error {
+	return [self initWithContentsOfURL:[NSURL fileURLWithPath:path] error:error];
+}
+
+// Private method
+// Parse contents of infofile into a dictionary.
 
 - (NSDictionary *)parseFields:(NSEnumerator *)lineEnumerator {    
     id		    line;

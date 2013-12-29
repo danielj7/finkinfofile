@@ -32,5 +32,7 @@
 @property (readonly) NSDictionary *fieldList;
 
 - (id)initWithString:(NSString *)string;
+- (id)initWithContentsOfURL:(NSURL *)url error:(NSError **)error;
+- (id)initWithContentsOfPath:(NSString *)path error:(NSError **)error;	
 
 @end
