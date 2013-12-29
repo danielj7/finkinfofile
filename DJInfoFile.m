@@ -22,7 +22,7 @@
  You should have received a copy of the GNU General Public License
  along with FinkInfoFile; if not, write to the Free Software
  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
-*/ 
+ */
 
 #import "DJInfoFile.h"
 
@@ -37,34 +37,34 @@ static NSCharacterSet	*whitespaceSet;
 
 - (id)initWithString:(NSString *)string {
     if (self = [super init]) {
-	if (string == nil) return self;
-	
-	// create these NSCharacterSets once so that all instances can reuse them
-	if (newlineSet == nil)
-	    newlineSet = [NSCharacterSet characterSetWithCharactersInString:@"\n"];
-	if (colonSet == nil)
-	    colonSet = [NSCharacterSet characterSetWithCharactersInString:@":"];
-	if (whitespaceSet == nil)
-	    whitespaceSet = [NSCharacterSet whitespaceCharacterSet];
+		if (string == nil) return self;
 		
-	// if the file begins with "This is ", it's probably a makeinfo generated file and can be ignored
-	if ([string hasPrefix:@"This is "])
-		return self;
-	
-	// Set to raw text content
-	_fileContents = string;
-	
-	// split file in lines
-	NSArray		*lines;
-	if (!(lines = [string componentsSeparatedByString:@"\n"])) return self;
-	
-	// create a line enumerator to pass to the parser
-	NSEnumerator    *lineEnumerator;
-	if (!(lineEnumerator = [lines objectEnumerator])) return self;
-	
-	// parse the file into a dictionary
-	_fieldList = [[NSDictionary alloc] initWithDictionary:[self parseFields:lineEnumerator]];
-	
+		// create these NSCharacterSets once so that all instances can reuse them
+		if (newlineSet == nil)
+			newlineSet = [NSCharacterSet characterSetWithCharactersInString:@"\n"];
+		if (colonSet == nil)
+			colonSet = [NSCharacterSet characterSetWithCharactersInString:@":"];
+		if (whitespaceSet == nil)
+			whitespaceSet = [NSCharacterSet whitespaceCharacterSet];
+		
+		// if the file begins with "This is ", it's probably a makeinfo generated file and can be ignored
+		if ([string hasPrefix:@"This is "])
+			return self;
+		
+		// Set to raw text content
+		_fileContents = string;
+		
+		// split file in lines
+		NSArray		*lines;
+		if (!(lines = [string componentsSeparatedByString:@"\n"])) return self;
+		
+		// create a line enumerator to pass to the parser
+		NSEnumerator    *lineEnumerator;
+		if (!(lineEnumerator = [lines objectEnumerator])) return self;
+		
+		// parse the file into a dictionary
+		_fieldList = [[NSDictionary alloc] initWithDictionary:[self parseFields:lineEnumerator]];
+		
     }
     return self;
 }
@@ -88,20 +88,20 @@ static NSCharacterSet	*whitespaceSet;
 // Private method
 // Parse contents of infofile into a dictionary.
 
-- (NSDictionary *)parseFields:(NSEnumerator *)lineEnumerator {    
+- (NSDictionary *)parseFields:(NSEnumerator *)lineEnumerator {
     id		    line;
     
     NSMutableDictionary    *theFields = [NSMutableDictionary dictionary];
     
     while (line = [lineEnumerator nextObject]) {
 		NSString    *fieldString;
-		id	    contentString;
+		id			contentString;
 		NSScanner   *scanner = [NSScanner scannerWithString:line];
 		
 		if ([scanner isAtEnd] == NO) {
 			if (![scanner scanUpToCharactersFromSet:colonSet
-						 intoString:&fieldString]) {
-				continue;		
+										 intoString:&fieldString]) {
+				continue;
 			}
 			if ([fieldString hasPrefix:@"#"]) {
 				continue;
@@ -113,38 +113,38 @@ static NSCharacterSet	*whitespaceSet;
 			fieldString = [[fieldString stringByTrimmingCharactersInSet:whitespaceSet] lowercaseString];
 			
 			[scanner scanCharactersFromSet:colonSet
-					intoString:nil];
+								intoString:nil];
 			
 			if ([scanner scanUpToCharactersFromSet:newlineSet
-						intoString:&contentString]) {
-			contentString = [contentString stringByTrimmingCharactersInSet:whitespaceSet];
-			if ([contentString isEqualToString:@"<<"]) {
-				contentString = @"";
-				if ([fieldString hasPrefix:@"splitoff"] ||
-				([fieldString hasPrefix:@"info"] && ![fieldString isEqualToString:@"infodocs"] && ![fieldString isEqualToString:@"infotest"])) {
-					contentString = [self parseFields:lineEnumerator];
-				} else {
-					while (line = [lineEnumerator nextObject]) {
-						NSString *trimmedLine = [line stringByTrimmingCharactersInSet:whitespaceSet];
-						if ([trimmedLine isEqualToString:@""]) {
-							contentString = [contentString stringByAppendingString:@"\n"];
-							continue;
+										intoString:&contentString]) {
+				contentString = [contentString stringByTrimmingCharactersInSet:whitespaceSet];
+				if ([contentString isEqualToString:@"<<"]) {
+					contentString = @"";
+					if ([fieldString hasPrefix:@"splitoff"] ||
+						([fieldString hasPrefix:@"info"] && ![fieldString isEqualToString:@"infodocs"] && ![fieldString isEqualToString:@"infotest"])) {
+						contentString = [self parseFields:lineEnumerator];
+					} else {
+						while (line = [lineEnumerator nextObject]) {
+							NSString *trimmedLine = [line stringByTrimmingCharactersInSet:whitespaceSet];
+							if ([trimmedLine isEqualToString:@""]) {
+								contentString = [contentString stringByAppendingString:@"\n"];
+								continue;
+							}
+							if ([trimmedLine isEqualToString:@"<<"]) {
+								break;
+							}
+							contentString = [contentString stringByAppendingFormat:@"%@\n", line];
 						}
-						if ([trimmedLine isEqualToString:@"<<"]) {
-							break;
-						}
-						contentString = [contentString stringByAppendingFormat:@"%@\n", line];
 					}
 				}
-			}
 			} else {
 				contentString = @"";
 			}
-					
+			
 			theFields[fieldString] = contentString;
 		}
     }
-    	    
+	
     return [theFields copy];
 }
 
