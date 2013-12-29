@@ -129,7 +129,7 @@ static NSCharacterSet	*whitespaceSet;
 				if ([contentString isEqualToString:@"<<"]) {
 					contentString = @"";
 					if ([fieldString hasPrefix:@"splitoff"] ||
-						([fieldString hasPrefix:@"info"] && ![fieldString isEqualToString:@"infodocs"] && ![fieldString isEqualToString:@"infotest"])) {
+						([fieldString hasPrefix:@"info"] && ![fieldString isEqualToString:@"infodocs"])) {
 						// These field names have to be parsed recursively since they can contain fields of their own.
 						contentString = [self parseFields:lineEnumerator];
 					} else {
