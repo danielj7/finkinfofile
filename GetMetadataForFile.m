@@ -24,10 +24,10 @@
  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */ 
 
-#include <CoreFoundation/CoreFoundation.h>
-#include <CoreServices/CoreServices.h> 
-#include <Foundation/Foundation.h>
-#include "DJInfoFile.h"
+#import <CoreFoundation/CoreFoundation.h>
+#import <CoreServices/CoreServices.h> 
+#import <Foundation/Foundation.h>
+#import "DJInfoFile.h"
 
 /* -----------------------------------------------------------------------------
    Step 1
