@@ -39,7 +39,7 @@ static NSCharacterSet	*whitespaceSet;
     if (self = [super init]) {
 		if (string == nil) return self;
 		
-		// create these NSCharacterSets once so that all instances can reuse them
+		// Create these NSCharacterSets once so that all instances can reuse them.
 		if (newlineSet == nil)
 			newlineSet = [NSCharacterSet characterSetWithCharactersInString:@"\n"];
 		if (colonSet == nil)
@@ -47,22 +47,22 @@ static NSCharacterSet	*whitespaceSet;
 		if (whitespaceSet == nil)
 			whitespaceSet = [NSCharacterSet whitespaceCharacterSet];
 		
-		// if the file begins with "This is ", it's probably a makeinfo generated file and can be ignored
+		// If the file begins with "This is ", it's probably a makeinfo generated file and can be ignored.
 		if ([string hasPrefix:@"This is "])
 			return self;
 		
-		// Set to raw text content
+		// Set to raw text content.
 		_fileContents = string;
 		
-		// split file in lines
+		// Split file in lines.
 		NSArray		*lines;
 		if (!(lines = [string componentsSeparatedByString:@"\n"])) return self;
 		
-		// create a line enumerator to pass to the parser
+		// Create a line enumerator to pass to the parser.
 		NSEnumerator    *lineEnumerator;
 		if (!(lineEnumerator = [lines objectEnumerator])) return self;
 		
-		// parse the file into a dictionary
+		// Parse the file into a dictionary.
 		_fieldList = [[NSDictionary alloc] initWithDictionary:[self parseFields:lineEnumerator]];
 		
     }
@@ -99,31 +99,41 @@ static NSCharacterSet	*whitespaceSet;
 		NSScanner   *scanner = [NSScanner scannerWithString:line];
 		
 		if ([scanner isAtEnd] == NO) {
+			// Skip line if there's no colon otherwise puts everything up to colon in fieldString.
+			// This is the field name. Also effectively skips blank lines.
 			if (![scanner scanUpToCharactersFromSet:colonSet
 										 intoString:&fieldString]) {
 				continue;
 			}
+			// Skip line if it begins with # (comment).
 			if ([fieldString hasPrefix:@"#"]) {
 				continue;
 			}
+			// If line is just a << then it's the end of a multiline field.
 			if ([fieldString isEqualToString:@"<<"]) {
 				break;
 			}
 			
+			// Remove any whitespace from beginning and end of field name and make all lowercase.
 			fieldString = [[fieldString stringByTrimmingCharactersInSet:whitespaceSet] lowercaseString];
 			
+			// Remove colon.
 			[scanner scanCharactersFromSet:colonSet
 								intoString:nil];
 			
+			// Treat everything from the colon to EOL as field content after removing whitespace.
 			if ([scanner scanUpToCharactersFromSet:newlineSet
 										intoString:&contentString]) {
 				contentString = [contentString stringByTrimmingCharactersInSet:whitespaceSet];
+				// Field content of << indicates the beginning of a multiline field.
 				if ([contentString isEqualToString:@"<<"]) {
 					contentString = @"";
 					if ([fieldString hasPrefix:@"splitoff"] ||
 						([fieldString hasPrefix:@"info"] && ![fieldString isEqualToString:@"infodocs"] && ![fieldString isEqualToString:@"infotest"])) {
+						// These field names have to be parsed recursively since they can contain fields of their own.
 						contentString = [self parseFields:lineEnumerator];
 					} else {
+						// Other multiline fields aren't recursive and all lines within them can be concatenated.
 						while (line = [lineEnumerator nextObject]) {
 							NSString *trimmedLine = [line stringByTrimmingCharactersInSet:whitespaceSet];
 							if ([trimmedLine isEqualToString:@""]) {
@@ -138,13 +148,14 @@ static NSCharacterSet	*whitespaceSet;
 					}
 				}
 			} else {
+				// Looks like we have emtpy field content.
 				contentString = @"";
 			}
-			
+			// Add field to the dictionary.
 			theFields[fieldString] = contentString;
 		}
     }
-	
+	// Must return an immutable copy of the dictionary.
     return [theFields copy];
 }
 
