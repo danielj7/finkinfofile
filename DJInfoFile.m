@@ -26,9 +26,9 @@
 
 #import "DJInfoFile.h"
 
-static NSCharacterSet	*newlineSet;
-static NSCharacterSet	*colonSet;
-static NSCharacterSet	*whitespaceSet;
+static NSCharacterSet	*newlineSet= nil;
+static NSCharacterSet	*colonSet = nil;
+static NSCharacterSet	*whitespaceSet = nil;
 
 @implementation DJInfoFile
 
@@ -40,13 +40,13 @@ static NSCharacterSet	*whitespaceSet;
 		if (string == nil) return self;
 		
 		// Create these NSCharacterSets once so that all instances can reuse them.
-		if (newlineSet == nil)
-			newlineSet = [NSCharacterSet newlineCharacterSet];
-		if (colonSet == nil)
-			colonSet = [NSCharacterSet characterSetWithCharactersInString:@":"];
-		if (whitespaceSet == nil)
-			whitespaceSet = [NSCharacterSet whitespaceCharacterSet];
-		
+		static dispatch_once_t onceToken;
+        dispatch_once(&onceToken, ^{
+            newlineSet = [NSCharacterSet newlineCharacterSet];
+            colonSet = [NSCharacterSet characterSetWithCharactersInString:@":"];
+            whitespaceSet = [NSCharacterSet whitespaceCharacterSet];
+		});
+        
 		// If the file begins with "This is ", it's probably a makeinfo generated file and can be ignored.
 		if ([string hasPrefix:@"This is "])
 			return self;
