@@ -41,7 +41,7 @@ static NSCharacterSet	*whitespaceSet;
 		
 		// Create these NSCharacterSets once so that all instances can reuse them.
 		if (newlineSet == nil)
-			newlineSet = [NSCharacterSet characterSetWithCharactersInString:@"\n"];
+			newlineSet = [NSCharacterSet newlineCharacterSet];
 		if (colonSet == nil)
 			colonSet = [NSCharacterSet characterSetWithCharactersInString:@":"];
 		if (whitespaceSet == nil)
