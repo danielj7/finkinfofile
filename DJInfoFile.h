@@ -29,11 +29,11 @@
 
 @interface DJInfoFile : NSObject
 
-@property (readonly) NSDictionary *fieldList;
-@property (readonly) NSString *fileContents;
+@property (nonatomic, readonly) NSDictionary *fieldList;
+@property (nonatomic, readonly) NSString *fileContents;
 
-- (id)initWithString:(NSString *)string;
-- (id)initWithContentsOfURL:(NSURL *)url error:(NSError **)error;
-- (id)initWithContentsOfPath:(NSString *)path error:(NSError **)error;	
+- (instancetype)initWithString:(NSString *)string NS_DESIGNATED_INITIALIZER;
+- (instancetype)initWithContentsOfURL:(NSURL *)url error:(NSError *__autoreleasing *)error;
+- (instancetype)initWithContentsOfPath:(NSString *)path error:(NSError *__autoreleasing *)error;
 
 @end

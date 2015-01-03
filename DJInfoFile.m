@@ -35,8 +35,8 @@ static NSCharacterSet	*whitespaceSet;
 // Designated initializer
 // Create infofile dictionary from string.
 
-- (id)initWithString:(NSString *)string {
-    if (self = [super init]) {
+- (instancetype)initWithString:(NSString *)string {
+    if ((self = [super init])) {
 		if (string == nil) return self;
 		
 		// Create these NSCharacterSets once so that all instances can reuse them.
@@ -71,7 +71,7 @@ static NSCharacterSet	*whitespaceSet;
 
 // Create infofile dictionary from URL.
 
-- (id)initWithContentsOfURL:(NSURL *)url error:(NSError **)error {
+- (instancetype)initWithContentsOfURL:(NSURL *)url error:(NSError *__autoreleasing *)error {
 	NSString *fileContents = [NSString stringWithContentsOfURL:url encoding:NSUTF8StringEncoding error:error];
 	if (fileContents == nil) {
 		fileContents = [NSString stringWithContentsOfURL:url encoding:NSWindowsCP1251StringEncoding error:error];
@@ -81,7 +81,7 @@ static NSCharacterSet	*whitespaceSet;
 
 // Create infofile dictionary from pathname.
 
-- (id)initWithContentsOfPath:(NSString *)path error:(NSError **)error {
+- (instancetype)initWithContentsOfPath:(NSString *)path error:(NSError *__autoreleasing *)error {
 	return [self initWithContentsOfURL:[NSURL fileURLWithPath:path] error:error];
 }
 
