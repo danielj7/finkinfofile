@@ -89,11 +89,11 @@ static NSCharacterSet	*whitespaceSet = nil;
 // Parse contents of infofile into a dictionary.
 
 - (NSDictionary *)parseFields:(NSEnumerator *)lineEnumerator {
-    id		    line;
+    NSString	*line;
     
     NSMutableDictionary    *theFields = [NSMutableDictionary dictionary];
     
-    while (line = [lineEnumerator nextObject]) {
+    while ((line = [lineEnumerator nextObject])) {
 		NSString    *fieldString;
 		id			contentString;
 		NSScanner   *scanner = [NSScanner scannerWithString:line];
@@ -134,7 +134,7 @@ static NSCharacterSet	*whitespaceSet = nil;
 						contentString = [self parseFields:lineEnumerator];
 					} else {
 						// Other multiline fields aren't recursive and all lines within them can be concatenated.
-						while (line = [lineEnumerator nextObject]) {
+						while ((line = [lineEnumerator nextObject])) {
 							NSString *trimmedLine = [line stringByTrimmingCharactersInSet:whitespaceSet];
 							if ([trimmedLine isEqualToString:@""]) {
 								contentString = [contentString stringByAppendingString:@"\n"];
